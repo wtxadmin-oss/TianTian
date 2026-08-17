@@ -1,60 +1,47 @@
-# Maven Project
+# Java JWT Token Lifecycle Lab
 
-这是一个简单的Maven项目示例。
+A compact Java 8 project for exploring the JWT lifecycle: user authentication, token issuance, signature validation, expiration checks, and token refresh.
 
-## 项目结构
+## What it demonstrates
 
+- HMAC-signed JWT creation with `jjwt`
+- Subject, issue time, expiration time, and custom claims
+- Token validation and username extraction
+- A simple refresh flow for valid tokens
+- Separation between CLI, service, model, and utility layers
+
+## Project structure
+
+```text
+src/main/java/com/example/
+├── App.java                  # CLI entry point
+├── controller/              # Console interaction
+├── service/TokenService.java
+├── model/Token.java
+└── util/JwtTokenUtil.java   # JWT encode/decode operations
 ```
-maven-project/
-├── pom.xml                    # Maven配置文件
-├── src/
-│   ├── main/
-│   │   └── java/
-│   │       └── com/example/
-│   │           └── App.java  # 主应用程序
-│   └── test/
-│       └── java/
-│           └── com/example/
-│               └── AppTest.java  # 测试类
-└── target/                    # 编译输出目录
-```
 
-## 使用方法
+## Run locally
 
-### 编译项目
+Requirements: JDK 8+ and Maven 3.8+.
+
+Set a signing secret of at least 32 bytes before starting the application:
+
 ```bash
-mvn compile
+export JWT_SECRET='replace-with-a-random-secret-at-least-32-bytes'
+mvn clean test
+mvn exec:java -Dexec.mainClass=com.example.App
 ```
 
-### 运行测试
-```bash
-mvn test
-```
+## Design notes
 
-### 运行应用程序
-```bash
-java -cp target\classes com.example.App
-```
+This repository intentionally keeps persistence and transport concerns small so the token lifecycle remains easy to inspect. Users are stored in memory and the interface is command-line based.
 
-### 打包项目
-```bash
-mvn package
-```
+For production use, replace the in-memory credential store with a database-backed identity provider, hash passwords, rotate signing keys, use short-lived access tokens with dedicated refresh tokens, and never print tokens to application logs.
 
-### 清理项目
-```bash
-mvn clean
-```
-
-## 功能
-
-- 简单的Java应用程序
-- 包含JUnit 5测试
-- 标准的Maven项目结构
-- 支持基本的构建生命周期
-
-## 技术栈
+## Tech stack
 
 - Java 8
-- Maven 3.x
+- Maven
+- JJWT 0.11.5
 - JUnit 5

@@ -3,6 +3,7 @@ package com.example.util;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,12 +14,18 @@ import java.util.Map;
  */
 public class JwtTokenUtil {
     
-    // 密钥 - 在实际应用中应该从配置文件或环境变量获取
-    private static final String SECRET_KEY = "mySecretKey123456789012345678901234567890";
-    private static final SecretKey KEY = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+    private static final SecretKey KEY = loadSigningKey();
     
     // token过期时间（毫秒）- 24小时
     private static final long EXPIRATION_TIME = 86400000;
+
+    private static SecretKey loadSigningKey() {
+        String secret = System.getenv("JWT_SECRET");
+        if (secret == null || secret.getBytes(StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalStateException("JWT_SECRET must contain at least 32 bytes");
+        }
+        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
     
     /**
      * 生成JWT token
